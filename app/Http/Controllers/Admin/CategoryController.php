@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\category;
+use App\Model\User\category;
 
 class CategoryController extends Controller
 {
@@ -16,6 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = category::orderBy('created_at','DESC')->get();
+        //$categories = category::all();
         return view('admin.category.index',compact('categories'));
         //return view('admin.category.index');
     }

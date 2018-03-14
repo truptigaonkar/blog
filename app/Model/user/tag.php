@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Model\user;
 
 use Illuminate\Database\Eloquent\Model;
 
-class admins extends Model
+class tag extends Model
 {
     //
 }
