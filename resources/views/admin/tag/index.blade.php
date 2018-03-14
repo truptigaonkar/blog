@@ -15,8 +15,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Tag Table
-        <small>advanced tables</small>
+        <i class="fa fa-ticket" aria-hidden="true"></i>Tag
+      <small>Create, Read, Update, Delete</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Home</a></li>

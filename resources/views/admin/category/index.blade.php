@@ -15,8 +15,8 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Category Table
-        <small>advanced tables</small>
+        <i class="fa fa-ticket" aria-hidden="true"></i>Category
+      <small>Create, Read, Update, Delete</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Home</a></li>

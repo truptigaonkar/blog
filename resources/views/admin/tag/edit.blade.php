@@ -6,7 +6,7 @@
 	  <!-- Content Header (Page header) -->
 	  <section class="content-header">
 	    <h1>
-	      Edit Tag
+	      Tag
 	      <small>Edit form element</small>
 	    </h1>
 	    <ol class="breadcrumb">
