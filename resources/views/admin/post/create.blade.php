@@ -1,7 +1,14 @@
 @extends('admin.app')
 
 @section('headSection')
-<link rel="stylesheet" href="{{ asset('admin/plugins/select2/select2.min.css') }}">
+<!-- iCheck for checkboxes and radio inputs -->
+  <link rel="stylesheet" href="{{ asset('admin/plugins/iCheck/all.css') }}">
+  <!-- Bootstrap Color Picker -->
+  <link rel="stylesheet" href="{{ asset('admin/bower_components/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.min.css') }}">
+  <!-- Bootstrap time Picker -->
+  <link rel="stylesheet" href="{{ asset('admin/plugins/timepicker/bootstrap-timepicker.min.css') }}">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="{{ asset('admin/bower_components/select2/dist/css/select2.min.css') }}">
 @endsection
 @section('main-content')
 <!-- Content Wrapper. Contains page content -->
@@ -67,7 +74,7 @@
                               <br>
                              <div class="form-group" style="margin-top:18px;">
                                 <label>Select Tags</label>
-                                <select class="form-control select2 select2-hidden-accessible" multiple="" data-placeholder="Select a State" style="width: 100%;" tabindex="-1" aria-hidden="true" name="tags[]">
+                                <select class="form-control select2" multiple="" data-placeholder="Select a State" style="width: 100%;" tabindex="-1" aria-hidden="true" name="tags[]">
                                 @foreach ($tags as $tag)
                                   <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                 @endforeach
@@ -75,13 +82,12 @@
                               </div>
                               <div class="form-group" style="margin-top:18px;">
                                 <label>Select Category</label>
-                                <select class="form-control select2 select2-hidden-accessible" multiple="" data-placeholder="Select a State" style="width: 100%;" tabindex="-1" aria-hidden="true" name="categories[]">
+                                <select class="form-control select2" multiple="" data-placeholder="Select a State" style="width: 100%;" tabindex="-1" aria-hidden="true" name="categories[]">
                                   @foreach ($categories as $category)
                                     <option value="{{ $category->id }}">{{ $category->name }}</option>
                                   @endforeach
                                 </select>
-                              </div>
-                              
+                              </div>                 
                             </div>
             </div>
             <!-- /.box-body -->
@@ -123,18 +129,18 @@
 <!-- /.content-wrapper -->
 @endsection
 @section('footerSection')
-<script src="{{ asset('admin/plugins/select2/select2.full.min.js') }}"></script>
-<script src="{{  asset('admin/bower_components/ckeditor/ckeditor.js') }}"></script>
+<!-- bootstrap color picker -->
+<script src="{{ asset('admin/bower_components/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.min.js') }}"></script>
+<!-- bootstrap time picker -->
+<script src="{{ asset('admin/plugins/timepicker/bootstrap-timepicker.min.js') }}"></script>
+<!-- SlimScroll -->
+<script src="{{ asset('admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
+<!-- iCheck 1.0.1 -->
+<script src="{{ asset('admin/plugins/iCheck/icheck.min.js') }}"></script>
 <script>
-    $(function () {
-      // Replace the <textarea id="editor1"> with a CKEditor
-      // instance, using default configuration.
-      CKEDITOR.replace('editor1');
-    });
-</script>
-<script>
-  $(document).ready(function() {
-    $(".select2").select2();
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
   });
 </script>
 @endsection
