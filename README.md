@@ -1,8 +1,4 @@
-# BLOG 
-
-Create Best Blog and Admin Panel with Laravel.
-
-### Blog Admin and User Panel 
+# Blog Admin and User Panel 
 Blog Admin and User Panel using Laravel Framework. Creating Blog Admin using Admin LTE panel and Blog User side using Blog bootstrap template
 
 ### Features:
