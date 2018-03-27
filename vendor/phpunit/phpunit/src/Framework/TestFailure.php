@@ -7,42 +7,45 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace PHPUnit\Framework;
+
+use PHPUnit\Framework\Error\Error;
+use Throwable;
 
 /**
  * A TestFailure collects a failed test together with the caught exception.
  */
-class PHPUnit_Framework_TestFailure
+class TestFailure
 {
+    /**
+     * @var null|Test
+     */
+    protected $failedTest;
+
+    /**
+     * @var Throwable
+     */
+    protected $thrownException;
     /**
      * @var string
      */
     private $testName;
 
     /**
-     * @var PHPUnit_Framework_Test|null
-     */
-    protected $failedTest;
-
-    /**
-     * @var Exception
-     */
-    protected $thrownException;
-
-    /**
      * Constructs a TestFailure with the given test and exception.
      *
-     * @param PHPUnit_Framework_Test $failedTest
-     * @param Throwable              $t
+     * @param Test      $failedTest
+     * @param Throwable $t
      */
-    public function __construct(PHPUnit_Framework_Test $failedTest, $t)
+    public function __construct(Test $failedTest, $t)
     {
-        if ($failedTest instanceof PHPUnit_Framework_SelfDescribing) {
+        if ($failedTest instanceof SelfDescribing) {
             $this->testName = $failedTest->toString();
         } else {
-            $this->testName = get_class($failedTest);
+            $this->testName = \get_class($failedTest);
         }
 
-        if (!$failedTest instanceof PHPUnit_Framework_TestCase || !$failedTest->isInIsolation()) {
+        if (!$failedTest instanceof TestCase || !$failedTest->isInIsolation()) {
             $this->failedTest = $failedTest;
         }
 
@@ -54,9 +57,9 @@ class PHPUnit_Framework_TestFailure
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
-        return sprintf(
+        return \sprintf(
             '%s: %s',
             $this->testName,
             $this->thrownException->getMessage()
@@ -66,9 +69,11 @@ class PHPUnit_Framework_TestFailure
     /**
      * Returns a description for the thrown exception.
      *
+     * @throws \InvalidArgumentException
+     *
      * @return string
      */
-    public function getExceptionAsString()
+    public function getExceptionAsString(): string
     {
         return self::exceptionToString($this->thrownException);
     }
@@ -76,31 +81,37 @@ class PHPUnit_Framework_TestFailure
     /**
      * Returns a description for an exception.
      *
-     * @param Exception $e
+     * @param Throwable $e
+     *
+     * @throws \InvalidArgumentException
      *
      * @return string
      */
-    public static function exceptionToString(Exception $e)
+    public static function exceptionToString(Throwable $e): string
     {
-        if ($e instanceof PHPUnit_Framework_SelfDescribing) {
+        if ($e instanceof SelfDescribing) {
             $buffer = $e->toString();
 
-            if ($e instanceof PHPUnit_Framework_ExpectationFailedException && $e->getComparisonFailure()) {
-                $buffer = $buffer . $e->getComparisonFailure()->getDiff();
+            if ($e instanceof ExpectationFailedException && $e->getComparisonFailure()) {
+                $buffer .= $e->getComparisonFailure()->getDiff();
             }
 
             if (!empty($buffer)) {
-                $buffer = trim($buffer) . "\n";
+                $buffer = \trim($buffer) . "\n";
             }
-        } elseif ($e instanceof PHPUnit_Framework_Error) {
-            $buffer = $e->getMessage() . "\n";
-        } elseif ($e instanceof PHPUnit_Framework_ExceptionWrapper) {
-            $buffer = $e->getClassName() . ': ' . $e->getMessage() . "\n";
-        } else {
-            $buffer = get_class($e) . ': ' . $e->getMessage() . "\n";
+
+            return $buffer;
         }
 
-        return $buffer;
+        if ($e instanceof Error) {
+            return $e->getMessage() . "\n";
+        }
+
+        if ($e instanceof ExceptionWrapper) {
+            return $e->getClassName() . ': ' . $e->getMessage() . "\n";
+        }
+
+        return \get_class($e) . ': ' . $e->getMessage() . "\n";
     }
 
     /**
@@ -108,7 +119,7 @@ class PHPUnit_Framework_TestFailure
      *
      * @return string
      */
-    public function getTestName()
+    public function getTestName(): string
     {
         return $this->testName;
     }
@@ -119,11 +130,11 @@ class PHPUnit_Framework_TestFailure
      * Note: The test object is not set when the test is executed in process
      * isolation.
      *
-     * @see PHPUnit_Framework_Exception
+     * @see Exception
      *
-     * @return PHPUnit_Framework_Test|null
+     * @return null|Test
      */
-    public function failedTest()
+    public function failedTest(): ?Test
     {
         return $this->failedTest;
     }
@@ -131,9 +142,9 @@ class PHPUnit_Framework_TestFailure
     /**
      * Gets the thrown exception.
      *
-     * @return Exception
+     * @return Throwable
      */
-    public function thrownException()
+    public function thrownException(): Throwable
     {
         return $this->thrownException;
     }
@@ -143,7 +154,7 @@ class PHPUnit_Framework_TestFailure
      *
      * @return string
      */
-    public function exceptionMessage()
+    public function exceptionMessage(): string
     {
         return $this->thrownException()->getMessage();
     }
@@ -154,8 +165,8 @@ class PHPUnit_Framework_TestFailure
      *
      * @return bool
      */
-    public function isFailure()
+    public function isFailure(): bool
     {
-        return ($this->thrownException() instanceof PHPUnit_Framework_AssertionFailedError);
+        return $this->thrownException() instanceof AssertionFailedError;
     }
 }

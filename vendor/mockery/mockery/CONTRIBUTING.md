@@ -39,7 +39,6 @@ but we'll probably merge any code that looks close enough.
 * Optionally, but preferably, write some documentation 
 * Optionally, update the CHANGELOG.md file with your feature or
   [BC](http://en.wikipedia.org/wiki/Backward_compatibility) break
-* If you have created new library files, add them to the root package.xml file for PEAR install support.
 * Send a [Pull
   Request](https://help.github.com/articles/creating-a-pull-request) to the
   correct target branch (see below)
@@ -66,7 +65,7 @@ e.g. 0.8.
 
 To run the unit tests for Mockery, clone the git repository, download Composer using
 the instructions at [http://getcomposer.org/download/](http://getcomposer.org/download/),
-then install the dependencies with `php /path/to/composer.phar install --dev`.
+then install the dependencies with `php /path/to/composer.phar install`.
 
 This will install the required PHPUnit and Hamcrest dev dependencies and create the
 autoload files required by the unit tests. You may run the `vendor/bin/phpunit` command

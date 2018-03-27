@@ -1,5 +1,5 @@
 <?php
-class BeforeClassWithOnlyDataProviderTest extends \PHPUnit_Framework_TestCase
+class BeforeClassWithOnlyDataProviderTest extends \PHPUnit\Framework\TestCase
 {
     public static $setUpBeforeClassWasCalled;
     public static $beforeClassWasCalled;
@@ -10,7 +10,7 @@ class BeforeClassWithOnlyDataProviderTest extends \PHPUnit_Framework_TestCase
         self::$beforeClassWasCalled      = false;
     }
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
         self::$setUpBeforeClassWasCalled = true;
     }

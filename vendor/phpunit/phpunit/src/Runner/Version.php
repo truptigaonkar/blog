@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of PHPUnit.
  *
@@ -8,12 +8,14 @@
  * file that was distributed with this source code.
  */
 
-use SebastianBergmann\Version;
+namespace PHPUnit\Runner;
+
+use SebastianBergmann\Version as VersionId;
 
 /**
  * This class defines the current version of PHPUnit.
  */
-class PHPUnit_Runner_Version
+class Version
 {
     private static $pharVersion;
     private static $version;
@@ -23,14 +25,14 @@ class PHPUnit_Runner_Version
      *
      * @return string
      */
-    public static function id()
+    public static function id(): string
     {
         if (self::$pharVersion !== null) {
             return self::$pharVersion;
         }
 
         if (self::$version === null) {
-            $version       = new Version('5.7.27', dirname(dirname(__DIR__)));
+            $version       = new VersionId('7.0.2', \dirname(__DIR__, 2));
             self::$version = $version->getVersion();
         }
 
@@ -40,21 +42,21 @@ class PHPUnit_Runner_Version
     /**
      * @return string
      */
-    public static function series()
+    public static function series(): string
     {
-        if (strpos(self::id(), '-')) {
-            $version = explode('-', self::id())[0];
+        if (\strpos(self::id(), '-')) {
+            $version = \explode('-', self::id())[0];
         } else {
             $version = self::id();
         }
 
-        return implode('.', array_slice(explode('.', $version), 0, 2));
+        return \implode('.', \array_slice(\explode('.', $version), 0, 2));
     }
 
     /**
      * @return string
      */
-    public static function getVersionString()
+    public static function getVersionString(): string
     {
         return 'PHPUnit ' . self::id() . ' by Sebastian Bergmann and contributors.';
     }
@@ -62,9 +64,9 @@ class PHPUnit_Runner_Version
     /**
      * @return string
      */
-    public static function getReleaseChannel()
+    public static function getReleaseChannel(): string
     {
-        if (strpos(self::$pharVersion, '-') !== false) {
+        if (\strpos(self::$pharVersion, '-') !== false) {
             return '-nightly';
         }
 

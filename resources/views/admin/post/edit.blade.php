@@ -57,7 +57,7 @@
                 <div class="form-group">
                   <div class="pull-right">
                     <label for="image">File input</label>
-                    <input type="file" name="image" id="image">
+                    <input type="file" name="image" id="image">{{ $post->image }}
                   </div>
                   <div class="checkbox pull-left">
                     <label>

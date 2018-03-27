@@ -7,11 +7,12 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace PHPUnit\Framework;
 
 /**
  * A warning.
  */
-class PHPUnit_Framework_WarningTestCase extends PHPUnit_Framework_TestCase
+class WarningTestCase extends TestCase
 {
     /**
      * @var string
@@ -48,17 +49,9 @@ class PHPUnit_Framework_WarningTestCase extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @throws PHPUnit_Framework_Exception
-     */
-    protected function runTest()
-    {
-        throw new PHPUnit_Framework_Warning($this->message);
-    }
-
-    /**
      * @return string
      */
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -68,8 +61,16 @@ class PHPUnit_Framework_WarningTestCase extends PHPUnit_Framework_TestCase
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return 'Warning';
+    }
+
+    /**
+     * @throws Exception
+     */
+    protected function runTest(): void
+    {
+        throw new Warning($this->message);
     }
 }

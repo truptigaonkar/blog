@@ -15,11 +15,23 @@
  *
  * @category   Mockery
  * @package    Mockery
- * @copyright  Copyright (c) 2010-2014 Pádraic Brady (http://blog.astrumfutura.com)
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
+
 namespace Mockery;
 
+/**
+ * @method Expectation once()
+ * @method Expectation zeroOrMoreTimes()
+ * @method Expectation twice()
+ * @method Expectation times(int $limit)
+ * @method Expectation never()
+ * @method Expectation atLeast()
+ * @method Expectation atMost()
+ * @method Expectation between()
+ * @method Expectation because(string $message)
+ */
 interface ExpectationInterface
 {
     /**
@@ -33,7 +45,13 @@ interface ExpectationInterface
     public function getMock();
 
     /**
+     * @param array $args
      * @return self
      */
-    public function andReturn();
+    public function andReturn(...$args);
+
+    /**
+     * @return self
+     */
+    public function andReturns();
 }

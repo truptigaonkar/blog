@@ -1,10 +1,15 @@
 <?php
-class Issue2137Test extends PHPUnit_Framework_TestCase
+class Issue2137Test extends PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider provideBrandService
+     *
      * @param $provided
      * @param $expected
+     *
+     * @throws Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testBrandService($provided, $expected)
     {
@@ -23,8 +28,13 @@ class Issue2137Test extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider provideBrandService
+     *
      * @param $provided
      * @param $expected
+     *
+     * @throws Exception
+     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
     public function testSomethingElseInvalid($provided, $expected)
     {

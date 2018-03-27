@@ -15,7 +15,7 @@
  * @category   Mockery
  * @package    Mockery
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2010-2014 Pádraic Brady (http://blog.astrumfutura.com)
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
 
@@ -26,7 +26,6 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
  */
 class Mockery_AdhocTest extends MockeryTestCase
 {
-
     public function setup()
     {
         $this->container = new \Mockery\Container(\Mockery::getDefaultGenerator(), \Mockery::getDefaultLoader());
@@ -69,9 +68,29 @@ class Mockery_AdhocTest extends MockeryTestCase
 
     public function testInvalidCountExceptionThrowsRuntimeExceptionOnIllegalComparativeSymbol()
     {
-        $this->setExpectedException('Mockery\Exception\RuntimeException');
+        $this->expectException('Mockery\Exception\RuntimeException');
         $e = new \Mockery\Exception\InvalidCountException;
         $e->setExpectedCountComparative('X');
+    }
+
+    public function testMockeryConstructAndDestructIsNotCalled()
+    {
+        MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled = false;
+        // We pass no arguments in constructor, so it's not being called. Then destructor shouldn't be called too.
+        $this->container->mock('MockeryTest_NameOfExistingClassWithDestructor');
+        // Clear references to trigger destructor
+        $this->container->mockery_close();
+        $this->assertFalse(MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled);
+    }
+
+    public function testMockeryConstructAndDestructIsCalled()
+    {
+        MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled = false;
+
+        $this->container->mock('MockeryTest_NameOfExistingClassWithDestructor', array());
+        // Clear references to trigger destructor
+        $this->container->mockery_close();
+        $this->assertTrue(MockeryTest_NameOfExistingClassWithDestructor::$isDestructorWasCalled);
     }
 }
 
@@ -87,4 +106,14 @@ interface MockeryTest_NameOfInterface
 abstract class MockeryTest_NameOfAbstract
 {
     abstract public function foo();
+}
+
+class MockeryTest_NameOfExistingClassWithDestructor
+{
+    public static $isDestructorWasCalled = false;
+
+    public function __destruct()
+    {
+        self::$isDestructorWasCalled = true;
+    }
 }

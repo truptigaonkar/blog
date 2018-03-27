@@ -12,13 +12,10 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Routing\UrlRoutable;
 use Illuminate\Contracts\Queue\QueueableEntity;
 use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Contracts\Queue\QueueableCollection;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
 
-/**
- * @mixin \Illuminate\Database\Eloquent\Builder
- * @mixin \Illuminate\Database\Query\Builder
- */
 abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializable, QueueableEntity, UrlRoutable
 {
     use Concerns\HasAttributes,
@@ -233,7 +230,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             if ($this->isFillable($key)) {
                 $this->setAttribute($key, $value);
             } elseif ($totallyGuarded) {
-                throw new MassAssignmentException($key);
+                throw new MassAssignmentException(sprintf(
+                    'Add [%s] to fillable property to allow mass assignment on [%s].',
+                    $key, get_class($this)
+                ));
             }
         }
 
@@ -251,6 +251,21 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         return static::unguarded(function () use ($attributes) {
             return $this->fill($attributes);
         });
+    }
+
+    /**
+     * Qualify the given column name by the model's table.
+     *
+     * @param  string  $column
+     * @return string
+     */
+    public function qualifyColumn($column)
+    {
+        if (Str::contains($column, '.')) {
+            return $column;
+        }
+
+        return $this->getTable().'.'.$column;
     }
 
     /**
@@ -301,6 +316,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $model->setRawAttributes((array) $attributes, true);
 
         $model->setConnection($connection ?: $this->getConnectionName());
+
+        $model->fireModelEvent('retrieved', false);
 
         return $model;
     }
@@ -369,13 +386,28 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function load($relations)
     {
-        $query = $this->newQuery()->with(
+        $query = $this->newQueryWithoutRelationships()->with(
             is_string($relations) ? func_get_args() : $relations
         );
 
         $query->eagerLoadRelations([$this]);
 
         return $this;
+    }
+
+    /**
+     * Eager load relations on the model if they are not already eager loaded.
+     *
+     * @param  array|string  $relations
+     * @return $this
+     */
+    public function loadMissing($relations)
+    {
+        $relations = is_string($relations) ? func_get_args() : $relations;
+
+        return $this->load(array_filter($relations, function ($relation) {
+            return ! $this->relationLoaded($relation);
+        }));
     }
 
     /**
@@ -520,6 +552,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // which is typically an auto-increment value managed by the database.
         else {
             $saved = $this->performInsert($query);
+
+            if (! $this->getConnectionName() &&
+                $connection = $query->getConnection()) {
+                $this->setConnection($connection->getName());
+            }
         }
 
         // If the model is successfully saved, we need to do a few more things once
@@ -557,11 +594,11 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     {
         $this->fireModelEvent('saved', false);
 
-        $this->syncOriginal();
-
-        if (Arr::get($options, 'touch', true)) {
+        if ($this->isDirty() && ($options['touch'] ?? true)) {
             $this->touchOwners();
         }
+
+        $this->syncOriginal();
     }
 
     /**
@@ -595,6 +632,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             $this->setKeysForSaveQuery($query)->update($dirty);
 
             $this->fireModelEvent('updated', false);
+
+            $this->syncChanges();
         }
 
         return true;
@@ -620,9 +659,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     protected function getKeyForSaveQuery()
     {
-        return isset($this->original[$this->getKeyName()])
-                        ? $this->original[$this->getKeyName()]
-                        : $this->getAttribute($this->getKeyName());
+        return $this->original[$this->getKeyName()]
+                        ?? $this->getKey();
     }
 
     /**
@@ -708,7 +746,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         // We will actually pull the models from the database table and call delete on
         // each of them individually so that their events get fired properly with a
         // correct set of attributes in case the developers wants to check these.
-        $key = with($instance = new static)->getKeyName();
+        $key = ($instance = new static)->getKeyName();
 
         foreach ($instance->whereIn($key, $ids)->get() as $model) {
             if ($model->delete()) {
@@ -750,8 +788,6 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
 
         $this->performDeleteOnModel();
 
-        $this->exists = false;
-
         // Once the model has been deleted, we will fire off the deleted event so that
         // the developers may hook into post-delete operations. We will then return
         // a boolean true as the delete is presumably successful on the database.
@@ -780,6 +816,8 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     protected function performDeleteOnModel()
     {
         $this->setKeysForSaveQuery($this->newQueryWithoutScopes())->delete();
+
+        $this->exists = false;
     }
 
     /**
@@ -799,8 +837,29 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function newQuery()
     {
-        $builder = $this->newQueryWithoutScopes();
+        return $this->registerGlobalScopes($this->newQueryWithoutScopes());
+    }
 
+    /**
+     * Get a new query builder with no relationships loaded.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function newQueryWithoutRelationships()
+    {
+        return $this->registerGlobalScopes(
+            $this->newEloquentBuilder($this->newBaseQueryBuilder())->setModel($this)
+        );
+    }
+
+    /**
+     * Register the global scopes for this builder instance.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function registerGlobalScopes($builder)
+    {
         foreach ($this->getGlobalScopes() as $identifier => $scope) {
             $builder->withGlobalScope($identifier, $scope);
         }
@@ -836,6 +895,19 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
         $builder = $this->newQuery();
 
         return $builder->withoutGlobalScope($scope);
+    }
+
+    /**
+     * Get a new query to restore one or more models by their queueable IDs.
+     *
+     * @param  array|int  $ids
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function newQueryForRestoration($ids)
+    {
+        return is_array($ids)
+                ? $this->newQueryWithoutScopes()->whereIn($this->getQualifiedKeyName(), $ids)
+                : $this->newQueryWithoutScopes()->whereKey($ids);
     }
 
     /**
@@ -884,10 +956,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      * @param  string|null  $using
      * @return \Illuminate\Database\Eloquent\Relations\Pivot
      */
-    public function newPivot(Model $parent, array $attributes, $table, $exists, $using = null)
+    public function newPivot(self $parent, array $attributes, $table, $exists, $using = null)
     {
         return $using ? $using::fromRawAttributes($parent, $attributes, $table, $exists)
-                      : new Pivot($parent, $attributes, $table, $exists);
+                      : Pivot::fromAttributes($parent, $attributes, $table, $exists);
     }
 
     /**
@@ -958,9 +1030,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
             return $this;
         }
 
-        $this->load(array_keys($this->relations));
+        $this->setRawAttributes(
+            static::newQueryWithoutScopes()->findOrFail($this->getKey())->attributes
+        );
 
-        $this->setRawAttributes(static::findOrFail($this->getKey())->attributes);
+        $this->load(collect($this->relations)->except('pivot')->keys()->toArray());
+
+        $this->syncOriginal();
 
         return $this;
     }
@@ -993,12 +1069,13 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Determine if two models have the same ID and belong to the same table.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  \Illuminate\Database\Eloquent\Model|null  $model
      * @return bool
      */
-    public function is(Model $model)
+    public function is($model)
     {
-        return $this->getKey() === $model->getKey() &&
+        return ! is_null($model) &&
+               $this->getKey() === $model->getKey() &&
                $this->getTable() === $model->getTable() &&
                $this->getConnectionName() === $model->getConnectionName();
     }
@@ -1006,10 +1083,10 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     /**
      * Determine if two models are not the same.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @param  \Illuminate\Database\Eloquent\Model|null  $model
      * @return bool
      */
-    public function isNot(Model $model)
+    public function isNot($model)
     {
         return ! $this->is($model);
     }
@@ -1097,7 +1174,9 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     public function getTable()
     {
         if (! isset($this->table)) {
-            return str_replace('\\', '', Str::snake(Str::plural(class_basename($this))));
+            return str_replace(
+                '\\', '', Str::snake(Str::plural(class_basename($this)))
+            );
         }
 
         return $this->table;
@@ -1146,7 +1225,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function getQualifiedKeyName()
     {
-        return $this->getTable().'.'.$this->getKeyName();
+        return $this->qualifyColumn($this->getKeyName());
     }
 
     /**
@@ -1216,6 +1295,46 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Get the queueable relationships for the entity.
+     *
+     * @return array
+     */
+    public function getQueueableRelations()
+    {
+        $relations = [];
+
+        foreach ($this->getRelations() as $key => $relation) {
+            if (method_exists($this, $key)) {
+                $relations[] = $key;
+            }
+
+            if ($relation instanceof QueueableCollection) {
+                foreach ($relation->getQueueableRelations() as $collectionValue) {
+                    $relations[] = $key.'.'.$collectionValue;
+                }
+            }
+
+            if ($relation instanceof QueueableEntity) {
+                foreach ($relation->getQueueableRelations() as $entityKey => $entityValue) {
+                    $relations[] = $key.'.'.$entityValue;
+                }
+            }
+        }
+
+        return array_unique($relations);
+    }
+
+    /**
+     * Get the queueable connection for the entity.
+     *
+     * @return mixed
+     */
+    public function getQueueableConnection()
+    {
+        return $this->getConnectionName();
+    }
+
+    /**
      * Get the value of the model's route key.
      *
      * @return mixed
@@ -1236,13 +1355,24 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
     }
 
     /**
+     * Retrieve the model for a bound value.
+     *
+     * @param  mixed  $value
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveRouteBinding($value)
+    {
+        return $this->where($this->getRouteKeyName(), $value)->first();
+    }
+
+    /**
      * Get the default foreign key name for the model.
      *
      * @return string
      */
     public function getForeignKey()
     {
-        return Str::snake(class_basename($this)).'_'.$this->primaryKey;
+        return Str::snake(class_basename($this)).'_'.$this->getKeyName();
     }
 
     /**
@@ -1299,7 +1429,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetExists($offset)
     {
-        return isset($this->$offset);
+        return ! is_null($this->getAttribute($offset));
     }
 
     /**
@@ -1310,7 +1440,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetGet($offset)
     {
-        return $this->$offset;
+        return $this->getAttribute($offset);
     }
 
     /**
@@ -1322,7 +1452,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetSet($offset, $value)
     {
-        $this->$offset = $value;
+        $this->setAttribute($offset, $value);
     }
 
     /**
@@ -1333,7 +1463,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function offsetUnset($offset)
     {
-        unset($this->$offset);
+        unset($this->attributes[$offset], $this->relations[$offset]);
     }
 
     /**
@@ -1344,7 +1474,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function __isset($key)
     {
-        return ! is_null($this->getAttribute($key));
+        return $this->offsetExists($key);
     }
 
     /**
@@ -1355,7 +1485,7 @@ abstract class Model implements ArrayAccess, Arrayable, Jsonable, JsonSerializab
      */
     public function __unset($key)
     {
-        unset($this->attributes[$key], $this->relations[$key]);
+        $this->offsetUnset($key);
     }
 
     /**

@@ -4,6 +4,8 @@ namespace Illuminate\Database\Eloquent;
 
 use LogicException;
 use Illuminate\Support\Arr;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Contracts\Queue\QueueableCollection;
 use Illuminate\Support\Collection as BaseCollection;
 
@@ -20,6 +22,10 @@ class Collection extends BaseCollection implements QueueableCollection
     {
         if ($key instanceof Model) {
             $key = $key->getKey();
+        }
+
+        if ($key instanceof Arrayable) {
+            $key = $key->toArray();
         }
 
         if (is_array($key)) {
@@ -43,12 +49,12 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function load($relations)
     {
-        if (count($this->items) > 0) {
+        if ($this->isNotEmpty()) {
             if (is_string($relations)) {
                 $relations = func_get_args();
             }
 
-            $query = $this->first()->newQuery()->with($relations);
+            $query = $this->first()->newQueryWithoutRelationships()->with($relations);
 
             $this->items = $query->eagerLoadRelations($this->items);
         }
@@ -159,7 +165,8 @@ class Collection extends BaseCollection implements QueueableCollection
             ->getDictionary();
 
         return $this->map(function ($model) use ($freshModels) {
-            return $model->exists ? $freshModels[$model->getKey()] : null;
+            return $model->exists && isset($freshModels[$model->getKey()])
+                    ? $freshModels[$model->getKey()] : null;
         });
     }
 
@@ -365,13 +372,26 @@ class Collection extends BaseCollection implements QueueableCollection
     }
 
     /**
+     * Pad collection to the specified length with a value.
+     *
+     * @param  int  $size
+     * @param  mixed $value
+     * @return \Illuminate\Support\Collection
+     */
+    public function pad($size, $value)
+    {
+        return $this->toBase()->pad($size, $value);
+    }
+
+    /**
      * Get the type of the entities being queued.
      *
      * @return string|null
+     * @throws \LogicException
      */
     public function getQueueableClass()
     {
-        if ($this->count() === 0) {
+        if ($this->isEmpty()) {
             return;
         }
 
@@ -393,6 +413,45 @@ class Collection extends BaseCollection implements QueueableCollection
      */
     public function getQueueableIds()
     {
-        return $this->modelKeys();
+        if ($this->isEmpty()) {
+            return [];
+        }
+
+        return $this->first() instanceof Pivot
+                    ? $this->map->getQueueableId()->all()
+                    : $this->modelKeys();
+    }
+
+    /**
+     * Get the relationships of the entities being queued.
+     *
+     * @return array
+     */
+    public function getQueueableRelations()
+    {
+        return $this->isNotEmpty() ? $this->first()->getQueueableRelations() : [];
+    }
+
+    /**
+     * Get the connection of the entities being queued.
+     *
+     * @return string|null
+     * @throws \LogicException
+     */
+    public function getQueueableConnection()
+    {
+        if ($this->isEmpty()) {
+            return;
+        }
+
+        $connection = $this->first()->getConnectionName();
+
+        $this->each(function ($model) use ($connection) {
+            if ($model->getConnectionName() !== $connection) {
+                throw new LogicException('Queueing collections with multiple model connections is not supported.');
+            }
+        });
+
+        return $connection;
     }
 }

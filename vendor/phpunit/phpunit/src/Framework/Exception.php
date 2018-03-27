@@ -7,6 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+namespace PHPUnit\Framework;
+
+use PHPUnit\Util\Filter;
 
 /**
  * Base class for all PHPUnit Framework exceptions.
@@ -28,21 +31,43 @@
  *
  * @see http://fabien.potencier.org/article/9/php-serialization-stack-traces-and-exceptions
  */
-class PHPUnit_Framework_Exception extends RuntimeException implements PHPUnit_Exception
+class Exception extends \RuntimeException implements \PHPUnit\Exception
 {
     /**
      * @var array
      */
     protected $serializableTrace;
 
-    public function __construct($message = '', $code = 0, Exception $previous = null)
+    public function __construct($message = '', $code = 0, \Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
         $this->serializableTrace = $this->getTrace();
+
         foreach ($this->serializableTrace as $i => $call) {
             unset($this->serializableTrace[$i]['args']);
         }
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        $string = TestFailure::exceptionToString($this);
+
+        if ($trace = Filter::getFilteredStacktrace($this)) {
+            $string .= "\n" . $trace;
+        }
+
+        return $string;
+    }
+
+    public function __sleep(): array
+    {
+        return \array_keys(\get_object_vars($this));
     }
 
     /**
@@ -50,27 +75,8 @@ class PHPUnit_Framework_Exception extends RuntimeException implements PHPUnit_Ex
      *
      * @return array
      */
-    public function getSerializableTrace()
+    public function getSerializableTrace(): array
     {
         return $this->serializableTrace;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString()
-    {
-        $string = PHPUnit_Framework_TestFailure::exceptionToString($this);
-
-        if ($trace = PHPUnit_Util_Filter::getFilteredStacktrace($this)) {
-            $string .= "\n" . $trace;
-        }
-
-        return $string;
-    }
-
-    public function __sleep()
-    {
-        return array_keys(get_object_vars($this));
     }
 }

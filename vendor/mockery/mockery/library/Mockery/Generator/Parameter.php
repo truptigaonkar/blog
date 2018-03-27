@@ -1,4 +1,22 @@
 <?php
+/**
+ * Mockery
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://github.com/padraic/mockery/blob/master/LICENSE
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to padraic@php.net so we can send you a copy immediately.
+ *
+ * @category   Mockery
+ * @package    Mockery
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
+ */
 
 namespace Mockery\Generator;
 
@@ -48,7 +66,7 @@ class Parameter
         if ((version_compare(PHP_VERSION, '5.4.1') >= 0)) {
             try {
                 if ($this->rfp->getClass()) {
-                    return $this->getOptionalSign() . $this->rfp->getClass()->getName();
+                    return $this->rfp->getClass()->getName();
                 }
             } catch (\ReflectionException $re) {
                 // noop
@@ -56,22 +74,13 @@ class Parameter
         }
 
         if (version_compare(PHP_VERSION, '7.0.0-dev') >= 0 && $this->rfp->hasType()) {
-            return $this->getOptionalSign() . $this->rfp->getType();
+            return (string) $this->rfp->getType();
         }
 
         if (preg_match('/^Parameter #[0-9]+ \[ \<(required|optional)\> (?<typehint>\S+ )?.*\$' . $this->rfp->getName() . ' .*\]$/', $this->rfp->__toString(), $typehintMatch)) {
             if (!empty($typehintMatch['typehint'])) {
                 return $typehintMatch['typehint'];
             }
-        }
-
-        return '';
-    }
-
-    private function getOptionalSign()
-    {
-        if (version_compare(PHP_VERSION, '7.1.0-dev', '>=') && $this->rfp->allowsNull() && !$this->rfp->isVariadic()) {
-            return '?';
         }
 
         return '';
@@ -96,6 +105,6 @@ class Parameter
      */
     public function isVariadic()
     {
-        return version_compare(PHP_VERSION, '5.6.0') >= 0 && $this->rfp->isVariadic();
+        return $this->rfp->isVariadic();
     }
 }

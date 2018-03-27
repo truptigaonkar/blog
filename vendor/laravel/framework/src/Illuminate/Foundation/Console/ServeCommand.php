@@ -3,7 +3,7 @@
 namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\ProcessUtils;
+use Illuminate\Support\ProcessUtils;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -30,9 +30,9 @@ class ServeCommand extends Command
      *
      * @throws \Exception
      */
-    public function fire()
+    public function handle()
     {
-        chdir($this->laravel->publicPath());
+        chdir(public_path());
 
         $this->line("<info>Laravel development server started:</info> <http://{$this->host()}:{$this->port()}>");
 
@@ -46,11 +46,11 @@ class ServeCommand extends Command
      */
     protected function serverCommand()
     {
-        return sprintf('%s -S %s:%s %s/server.php',
+        return sprintf('%s -S %s:%s %s',
             ProcessUtils::escapeArgument((new PhpExecutableFinder)->find(false)),
             $this->host(),
             $this->port(),
-            ProcessUtils::escapeArgument($this->laravel->basePath())
+            ProcessUtils::escapeArgument(base_path('server.php'))
         );
     }
 

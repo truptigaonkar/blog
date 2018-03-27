@@ -3,6 +3,7 @@
 namespace Illuminate\View\Concerns;
 
 use Countable;
+use Traversable;
 use Illuminate\Support\Arr;
 
 trait ManagesLoops
@@ -22,14 +23,20 @@ trait ManagesLoops
      */
     public function addLoop($data)
     {
-        $length = is_array($data) || $data instanceof Countable ? count($data) : null;
+        $length = null;
+
+        if (is_array($data) || $data instanceof Countable) {
+            $length = count($data);
+        } elseif ($data instanceof Traversable) {
+            $length = iterator_count($data);
+        }
 
         $parent = Arr::last($this->loopsStack);
 
         $this->loopsStack[] = [
             'iteration' => 0,
             'index' => 0,
-            'remaining' => isset($length) ? $length : null,
+            'remaining' => $length ?? null,
             'count' => $length,
             'first' => true,
             'last' => isset($length) ? $length == 1 : null,

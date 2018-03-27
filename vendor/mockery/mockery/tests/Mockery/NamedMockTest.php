@@ -15,9 +15,11 @@
  * @category   Mockery
  * @package    Mockery
  * @subpackage UnitTests
- * @copyright  Copyright (c) 2010-2014 Pádraic Brady (http://blog.astrumfutura.com)
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
  * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
  */
+
+require_once __DIR__.'/DummyClasses/Namespaced.php';
 
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 
@@ -50,5 +52,17 @@ class NamedMockTest extends MockeryTestCase
     {
         $mock = Mockery::namedMock("Mockery\Dave7");
         $mock = Mockery::namedMock("Mockery\Dave7", "DateTime");
+    }
+
+    /** @test */
+    public function itCreatesConcreteMethodImplementationWithReturnType()
+    {
+        $cactus = new \Nature\Plant();
+        $gardener = Mockery::namedMock(
+            "NewNamespace\\ClassName",
+            "Gardener",
+            array('water' => true)
+        );
+        $this->assertTrue($gardener->water($cactus));
     }
 }

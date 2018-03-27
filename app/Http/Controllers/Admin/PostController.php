@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
 use App\Model\User\post;
 use App\Model\User\category;
 use App\Model\User\tag;
+
 
 class PostController extends Controller
 {
@@ -46,15 +51,30 @@ class PostController extends Controller
             'subtitle' => 'required',
             'slug' => 'required',
             'body' => 'required',
-            'image' => 'required',
+            'image' => 'nullable|max:1999',
             ]);
-        if ($request->hasFile('image')) {
-            $imageName = $request->image->store('public');
-        }else{
-            return 'No';
+
+        //Handle file upload
+        if($request->hasFile('image'))
+        {
+            // Get filename with the extension
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+            // Get just filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            // Get just ext
+            $extension = $request->file('image')->getClientOriginalExtension();
+            // Filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            // Upload image
+            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+        } else
+        {
+            $fileNameToStore = 'noimage.jpg';
         }
+
+        //Create new post
         $post = new post;
-        $post->image = $imageName;
+        $post->image = $fileNameToStore;
         $post->title = $request->title;
         $post->subtitle = $request->subtitle;
         $post->slug = $request->slug;
@@ -105,22 +125,44 @@ class PostController extends Controller
             'subtitle' => 'required',
             'slug' => 'required',
             'body' => 'required',
-            'image'=>'required'
+            'image'=>'nullable|max:1999'
             ]);
-        if ($request->hasFile('image')) {
-            $imageName = $request->image->store('public');
+       //Handle file upload
+        if($request->hasFile('image'))
+        {
+            // Get filename with the extension
+            $filenameWithExt = $request->file('image')->getClientOriginalName();
+            // Get just filename
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            // Get just ext
+            $extension = $request->file('image')->getClientOriginalExtension();
+            // Filename to store
+            $fileNameToStore = $filename.'_'.time().'.'.$extension;
+            // Upload image
+            $path = $request->file('image')->storeAs('public/images', $fileNameToStore);
+        } else
+        {
+            $fileNameToStore = 'noimage.jpg';
         }
-        $post = post::find($id);
-        $post->image = $imageName;
+        //Update file
+        $post = post::find($id); 
         $post->title = $request->title;
         $post->subtitle = $request->subtitle;
         $post->slug = $request->slug;
         $post->body = $request->body;
         $post->status = $request->status;
+        if($request->hasFile('image'))
+        {
+            // Delete the old image if it's changed .
+            if ($post->image != 'no_image.png') 
+            {
+                Storage::delete('public/images/'.$post->image);
+            }
+            $post->image = $fileNameToStore;
+        }
         $post->tags()->sync($request->tags);
         $post->categories()->sync($request->categories);
         $post->save();
-
         return redirect(route('post.index'))->with('message', 'Updated Post Successfully!!!!');
     }
 
@@ -132,7 +174,15 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        post::where('id',$id)->delete();
-        return redirect()->back();
+        $posts = post::find($id);
+        //Delete image from post
+        if($posts->image != 'noimage.jpg')
+        {
+            Storage::delete('public/images/'.$posts->image);
+        }
+        $posts->categories()->detach();
+        $posts->tags()->detach();
+        $posts->delete();
+        return redirect(route('post.index'))->with('message', 'Deleted Post Successfully!!!!');
     }
 }

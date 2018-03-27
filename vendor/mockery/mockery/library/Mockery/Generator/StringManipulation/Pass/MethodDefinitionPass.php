@@ -1,8 +1,27 @@
 <?php
+/**
+ * Mockery
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://github.com/padraic/mockery/blob/master/LICENSE
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to padraic@php.net so we can send you a copy immediately.
+ *
+ * @category   Mockery
+ * @package    Mockery
+ * @copyright  Copyright (c) 2010 Pádraic Brady (http://blog.astrumfutura.com)
+ * @license    http://github.com/padraic/mockery/blob/master/LICENSE New BSD License
+ */
 
 namespace Mockery\Generator\StringManipulation\Pass;
 
 use Mockery\Generator\Method;
+use Mockery\Generator\Parameter;
 use Mockery\Generator\MockConfiguration;
 
 class MethodDefinitionPass implements Pass
@@ -49,7 +68,7 @@ class MethodDefinitionPass implements Pass
         $methodParams = array();
         $params = $method->getParameters();
         foreach ($params as $param) {
-            $paramDef = $param->getTypeHintAsString();
+            $paramDef = $this->renderTypeHint($param);
             $paramDef .= $param->isPassedByReference() ? '&' : '';
             $paramDef .= $param->isVariadic() ? '...' : '';
             $paramDef .= '$' . $param->getName();
@@ -78,6 +97,39 @@ class MethodDefinitionPass implements Pass
         $lastBrace = strrpos($class, "}");
         $class = substr($class, 0, $lastBrace) . $code . "\n    }\n";
         return $class;
+    }
+
+    protected function renderTypeHint(Parameter $param)
+    {
+        $languageTypeHints = array(
+            'self',
+            'array',
+            'callable',
+            // Up to php 7
+            'bool',
+            'float',
+            'int',
+            'string',
+            'iterable',
+        );
+
+        if (version_compare(PHP_VERSION, '7.2.0-dev') >= 0) {
+            $languageTypeHints[] = 'object';
+        }
+
+        $typeHint = trim($param->getTypeHintAsString());
+
+        if (!empty($typeHint)) {
+            if (!in_array($typeHint, $languageTypeHints)) {
+                $typeHint = '\\'.$typeHint;
+            }
+
+            if (version_compare(PHP_VERSION, '7.1.0-dev') >= 0 && $param->allowsNull()) {
+                $typeHint = "?".$typeHint;
+            }
+        }
+
+        return $typeHint .= ' ';
     }
 
     private function renderMethodBody($method, $config)
@@ -127,24 +179,13 @@ BODY;
             }
         }
 
-        $body .= $this->getReturnStatement($method, $invoke);
+        $body .= "\$ret = {$invoke}(__FUNCTION__, \$argv);\n";
 
-        return $body;
-    }
-
-    private function getReturnStatement($method, $invoke)
-    {
-        if ($method->getReturnType() === 'void') {
-            return <<<BODY
-{$invoke}(__FUNCTION__, \$argv);
-}
-BODY;
+        if ($method->getReturnType() !== "void") {
+            $body .= "return \$ret;\n";
         }
 
-        return <<<BODY
-\$ret = {$invoke}(__FUNCTION__, \$argv);
-return \$ret;
-}
-BODY;
+        $body .= "}\n";
+        return $body;
     }
 }

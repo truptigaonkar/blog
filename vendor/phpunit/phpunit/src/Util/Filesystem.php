@@ -8,16 +8,13 @@
  * file that was distributed with this source code.
  */
 
+namespace PHPUnit\Util;
+
 /**
  * Filesystem helpers.
  */
-class PHPUnit_Util_Filesystem
+final class Filesystem
 {
-    /**
-     * @var array
-     */
-    protected static $buffer = [];
-
     /**
      * Maps class names to source file names:
      *   - PEAR CS:   Foo_Bar_Baz -> Foo/Bar/Baz.php
@@ -27,9 +24,9 @@ class PHPUnit_Util_Filesystem
      *
      * @return string
      */
-    public static function classNameToFilename($className)
+    public static function classNameToFilename(string $className): string
     {
-        return str_replace(
+        return \str_replace(
             ['_', '\\'],
             DIRECTORY_SEPARATOR,
             $className
