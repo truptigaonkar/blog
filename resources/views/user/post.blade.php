@@ -2,9 +2,9 @@
 
 @section('bg-img',asset('user/img/post-bg.jpg'))
 
-@section('title','My Post')
+@section('title', $postslug->title)
 
-@section('subheading','Here is my post')
+@section('subheading',$postslug->subtitle)
 
 @section('main-content')
 <!-- Post Content -->
@@ -12,15 +12,22 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-md-10 mx-auto">
-            <p>Never in all their history have men been able truly to conceive of the world as one: a single sphere, a globe, having the qualities of a globe, a round earth in which all the directions eventually meet, in which there is no center because every point, or none, is center — an equal earth which all men occupy as equals. The airman's earth, if free men make it, will be truly round: a globe in practice, not in theory.</p>
+              <small>Created at {{ $postslug->created_at }}</small>
+              @foreach ($postslug->categories as $category)
+                <small class="pull-right" style="margin-right: 20px">  
+                    {{ $category->name }}
+                </small>
+              @endforeach
 
-            <h2 class="section-heading">The Final Frontier</h2>
+            <p>{!! htmlspecialchars_decode($postslug -> body) !!} </p>
 
-            <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-
-            <p>Placeholder text by
-              <a href="http://spaceipsum.com/">Space Ipsum</a>. Photographs by
-              <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>.</p>
+             {{-- Tag clouds --}}
+             <h3>Tag Clouds</h3>
+             @foreach ($postslug->tags as $tag)
+             <small class="pull-left" style="margin-right: 20px;border-radius: 5px;border: 1px solid gray;padding: 5px;">  
+                                 {{ $tag->name }}
+                             </small>
+             @endforeach
           </div>
         </div>
       </div>

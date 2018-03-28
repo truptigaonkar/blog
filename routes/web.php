@@ -11,14 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('user.blog');
-});
 
-Route::get('post', function () {
-    return view('user.post');
-})->name('post');
-
+Route::get('/', 'User\HomeController@index');
+Route::get('post/{postslug}', 'User\PostController@index')->name('post');
 
 Route::get('admin/home','Admin\HomeController@index')->name('admin.home');
 Route::resource('admin/category', 'Admin\CategoryController');
