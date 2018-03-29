@@ -4,7 +4,7 @@
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>BLOG</b></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>My</b> blog</span>
+      <span class="logo-lg"><b>Blog</b> Admin Panel</span>     Blog Admin Panel
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
