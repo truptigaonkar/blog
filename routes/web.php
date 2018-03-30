@@ -25,3 +25,7 @@ Route::resource('admin/category', 'Admin\CategoryController');
 Route::resource('admin/tag', 'Admin\TagController');
 Route::resource('admin/post', 'Admin\PostController');
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
