@@ -8,6 +8,12 @@ use App\Model\User\tag;
 
 class TagController extends Controller
 {
+     // Middleware for Admin
+     public function __construct()
+     {
+         $this->middleware('auth:admin');
+     }
+     
     /**
      * Display a listing of the resource.
      *
