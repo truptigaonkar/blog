@@ -15,15 +15,15 @@
           @foreach($posts as $post)
             <div class="post-preview">
               <a href="{{ route('post',$post->slug) }}">
-                <h2 class="post-title">
+                <h3 class="post-title">
                   {{ $post->title }}
-                </h2>
-                <h3 class="post-subtitle">
-                    {{ $post->subtitle }}
                 </h3>
+                <h4 class="post-subtitle">
+                    {{ $post->subtitle }}
+                </h4>
               </a>
               <p class="post-meta">Posted by
-                <a href="#">Start Bootstrap</a>
+                <a href="#">User</a>
                 {{ $post->created_at->diffForHumans() }}</p>
             </div>
           @endforeach
