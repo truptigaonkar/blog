@@ -1,5 +1,13 @@
 @extends('admin/app')
 
+@section('headSection')
+<!-- DataTables -->
+<link rel="stylesheet" href="{{ asset('admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.css') }}">
+<!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+<link rel="stylesheet" href="{{ asset('admin/dist/css/skins/_all-skins.min.css') }}">
+@endsection
+
 @section('main-content')
 	
 	  <!-- Content Wrapper. Contains page content -->
@@ -34,7 +42,7 @@
           </div>
         </div>
         <div class="box-body">
-          Start creating your amazing application!
+          Start creating your amazing application! now
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
@@ -48,7 +56,40 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
-	
+@endsection
+
+@section('footerSection')
+<!-- jQuery 3 -->
+<script src="{{ asset('admin/bower_components/jquery/dist/jquery.min.js') }}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{{ asset('admin/bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<!-- DataTables -->
+<script src="{{ asset('admin/bower_components/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ asset('admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+<!-- SlimScroll -->
+<script src="{{ asset('admin/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>
+<!-- FastClick -->
+<script src="{{ asset('admin/bower_components/fastclick/lib/fastclick.js') }}"></script>
+<!-- FastClick -->
+<script src="{{ asset('admin/bower_components/fastclick/lib/fastclick.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('admin/dist/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ asset('admin/dist/js/demo.js') }}"></script>
+<!-- page script -->
+<script>
+  $(function () {
+    $('#example1').DataTable()
+    $('#example2').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : false,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : false
+    })
+  })
+</script>
 @endsection
 
 

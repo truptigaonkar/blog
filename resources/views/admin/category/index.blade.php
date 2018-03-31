@@ -6,8 +6,8 @@
 <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
 <link rel="stylesheet" href="{{ asset('admin/dist/css/skins/_all-skins.min.css') }}">
-  
 @endsection
+
 @section('main-content')
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -96,6 +96,7 @@
   </div>
   <!-- /.content-wrapper -->
 @endsection
+
 @section('footerSection')
 <!-- jQuery 3 -->
 <script src="{{ asset('admin/bower_components/jquery/dist/jquery.min.js') }}"></script>
