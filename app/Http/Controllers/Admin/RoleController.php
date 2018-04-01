@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Model\admin\role;
 use Illuminate\Http\Request;
+use App\Model\admin\permission;
 use App\Http\Controllers\Controller;
 
 class RoleController extends Controller
@@ -26,7 +27,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('admin.role.create');
+        $permissions = permission::all();
+        return view('admin.role.create', compact('permissions'));
     }
 
     /**
@@ -55,7 +57,8 @@ class RoleController extends Controller
     public function edit($id)
     {
         $role = role::find($id);
-        return view('admin.role.edit', compact('role'));
+        $permissions = permission::all();
+        return view('admin.role.edit',compact('role','permissions'));
     }
 
     /**
@@ -68,7 +71,7 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request,[
-            'name' => 'required|max:50|unique:roles'
+            'name' => 'required|max:50'
         ]);
         $role = role::find($id);
         $role->name = $request->name;

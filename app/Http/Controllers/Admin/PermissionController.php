@@ -70,7 +70,7 @@ class PermissionController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request,[
-            'name' => 'required|max:50|unique:permissions',
+            'name' => 'required|max:50',
             'for' => 'required'
         ]);
         //return 'validation has passed';

@@ -38,6 +38,8 @@
 	                <input type="text" class="form-control" id="name" name="name" placeholder="role Title" value="{{ $role->name }}">
 	              </div>
 
+							
+
 	            <div class="form-group">
 	              <button type="submit" class="btn btn-primary">Submit</button>
 	              <a href='{{ route('role.index') }}' class="btn btn-warning">Back</a>

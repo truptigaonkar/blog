@@ -39,8 +39,13 @@
 	              </div>
 
 	              <div class="form-group">
-	                <label for="for">permission for</label>
-	                <input type="text" class="form-control" id="for" name="for" placeholder="for" value="{{ $permission->for }}">
+	              	<label for="for">Permission for</label>
+	              	<select name="for" id="for" class="form-control">
+	              		<option selected disable value="{{ $permission->for }}">{{ $permission->for }}</option>
+	              		<option value="user">User</option>
+	              		<option value="post">Post</option>
+	              		<option value="other">Other</option>
+	              	</select>
 	              </div>
 
 	            <div class="form-group">
