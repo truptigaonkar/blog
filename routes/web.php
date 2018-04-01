@@ -26,6 +26,7 @@ Route::resource('admin/category', 'Admin\CategoryController');
 Route::resource('admin/tag', 'Admin\TagController');
 Route::resource('admin/post', 'Admin\PostController');
 Route::resource('admin/permission', 'Admin\PermissionController');
+Route::resource('admin/role', 'Admin\RoleController');
 
 // Admin Auth Routes
 Route::get('admin-login', 'Admin\Auth\LoginController@showLoginForm')->name('admin.login');

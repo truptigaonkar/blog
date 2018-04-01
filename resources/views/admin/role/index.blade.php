@@ -6,6 +6,7 @@
 <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
 <link rel="stylesheet" href="{{ asset('admin/dist/css/skins/_all-skins.min.css') }}">
+  
 @endsection
 @section('main-content')
   <!-- Content Wrapper. Contains page content -->
@@ -13,12 +14,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-ticket" aria-hidden="true"></i>Post
+        <i class="fa fa-ticket" aria-hidden="true"></i>role
       <small>Create, Read, Update, Delete</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="{{ route('post.index') }}">Post Table</a></li>
+        <li><a href="{{ route('role.index') }}">role Table</a></li>
         <li class="active">Data tables</li>
       </ol>
     </section>
@@ -29,8 +30,8 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-        <h3 class="box-title">Post</h3>
-        <a class='pull-right btn btn-success' href="{{ route('post.create') }}">Add New</a>
+        <h3 class="box-title">role</h3>
+        <a class='pull-right btn btn-success' href="{{ route('role.create') }}">Add New</a>
       </div>
       @include('includes.messages')
             <!-- /.box-header -->
@@ -39,25 +40,19 @@
                 <thead>
                   <tr>
                     <th>S.No</th>
-                    <th>Title</th>
-                    <th>Sub Title</th>
-                    <th>Slug</th>
-                    <th>Creatd At</th>
+                    <th>role Name</th>
                     <th>Edit</th>
                     <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                @foreach ($posts as $post)
+                @foreach ($roles as $role)
                 <tr>
                   <td>{{ $loop->index + 1 }}</td>
-                  <td>{{ $post->title }}</td>
-                  <td>{{ $post->subtitle }}</td>
-                  <td>{{ $post->slug }}</td>
-                  <td>{{ $post->created_at }}</td>
-                  <td><a href="{{ route('post.edit',$post->id) }}"><span class="glyphicon glyphicon-edit"></span></a></td>
+                  <td>{{ $role->name }}</td>
+                  <td><a href="{{ route('role.edit',$role->id) }}"><span class="glyphicon glyphicon-edit"></span></a></td>
                   <td>
-                      <form id="delete-form-{{ $post->id }}" method="post" action="{{ route('post.destroy',$post->id) }}" style="display: none">
+                      <form id="delete-form-{{ $role->id }}" method="post" action="{{ route('role.destroy',$role->id) }}" style="display: none">
                         {{ csrf_field() }}
                         {{ method_field('DELETE') }}
                       </form>
@@ -65,7 +60,7 @@
                         if(confirm('Are you sure, You Want to delete this?'))
                           {
                             event.preventDefault();
-                            document.getElementById('delete-form-{{ $post->id }}').submit();
+                            document.getElementById('delete-form-{{ $role->id }}').submit();
                           }
                           else{
                             event.preventDefault();
@@ -78,14 +73,11 @@
                 </tbody>
                 <tfoot>
                 <tr>
-                    <th>S.No</th>
-                    <th>Title</th>
-                    <th>Sub Title</th>
-                    <th>Slug</th>
-                    <th>Creatd At</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                  </tr>
+                  <th>S.No</th>
+                  <th>role Name</th>
+                  <th>Edit</th>
+                  <th>Delete</th>
+                </tr>
                 </tfoot>
               </table>
             </div>
