@@ -31,7 +31,7 @@
         <li><a href="{{ route('tag.index')}}"><i class="fa fa-circle-o"></i> Tags</a></li>
         <li><a href=""><i class="fa fa-circle-o"></i> Users</a></li>
         <li><a href=""><i class="fa fa-circle-o"></i> Roles</a></li>
-        <li><a href=""><i class="fa fa-circle-o"></i> Permissions</a></li>   
+      <li><a href="{{ route('permission.index') }}"><i class="fa fa-circle-o"></i> Permissions</a></li>   
       </ul>
     </section>
     <!-- /.sidebar -->
