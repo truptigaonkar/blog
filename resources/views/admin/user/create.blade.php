@@ -55,6 +55,15 @@
                 <div class="form-group">
                   <label for="password_confirmation">Confirm Passowrd</label>
                   <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="confirm passowrd">
+								</div>
+								
+								<div class="form-group">
+                  <label for="confirm_passowrd">Status</label>
+                  <div class="checkbox">
+                    <label ><input type="checkbox" name="status" value="0" @if (old('status') == 1)
+                      checked
+                    @endif value="1">Status</label>
+                  </div>
                 </div>
 
                 <div class="form-group">

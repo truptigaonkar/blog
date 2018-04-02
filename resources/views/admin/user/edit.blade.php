@@ -46,7 +46,7 @@
 										<label for="phone">Phone</label>
 										<input type="text" class="form-control" id="phone" name="phone" placeholder="phone" value="@if (old('phone')){{ old('phone') }}@else{{ $user->phone }}@endif">
 									</div>
-	
+
 									<div class="form-group">
 										<label for="confirm_passowrd">Status</label>
 										<div class="checkbox">
