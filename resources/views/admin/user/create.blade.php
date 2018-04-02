@@ -58,15 +58,6 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="confirm_passowrd">Status</label>
-                  <div class="checkbox">
-                    <label ><input type="checkbox" name="status" @if (old('status') == 1)
-                      checked
-                    @endif value="1">Status</label>
-                  </div>
-                </div>
-
-                <div class="form-group">
                 <label>Assign Role</label>
                 <div class="row">
                   @foreach ($roles as $role)

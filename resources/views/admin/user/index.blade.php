@@ -41,40 +41,46 @@
                   <tr>
                     <th>S.No</th>
                     <th>User Name</th>
+                    <th>Assigned Roles</th>
                     <th>Edit</th>
                     <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                @foreach ($users as $user)
-                <tr>
-                  <td>{{ $loop->index + 1 }}</td>
-                  <td>{{ $user->name }}</td>
-                  <td><a href="{{ route('user.edit',$user->id) }}"><span class="glyphicon glyphicon-edit"></span></a></td>
-                  <td>
-                      <form id="delete-form-{{ $user->id }}" method="post" action="{{ route('user.destroy',$user->id) }}" style="display: none">
-                        {{ csrf_field() }}
-                        {{ method_field('DELETE') }}
-                      </form>
-                      <a href="" onclick="
-                        if(confirm('Are you sure, You Want to delete this?'))
-                          {
-                            event.preventDefault();
-                            document.getElementById('delete-form-{{ $user->id }}').submit();
-                          }
-                          else{
-                            event.preventDefault();
-                          }" ><span class="glyphicon glyphicon-trash"></span></a>
-                  </td>
-                </tr>
-                          </tr>
+                  @foreach ($users as $user)
+                    <tr>
+                      <td>{{ $loop->index + 1 }}</td>
+                      <td>{{ $user->name }}</td>
+                      <td>
+                        @foreach ($user->roles as $role)
+                          {{ $role->name }},
+                        @endforeach
+                      </td>
+                        <td><a href="{{ route('user.edit',$user->id) }}"><span class="glyphicon glyphicon-edit"></span></a></td>
+                        <td>
+                          <form id="delete-form-{{ $user->id }}" method="post" action="{{ route('user.destroy',$user->id) }}" style="display: none">
+                            {{ csrf_field() }}
+                            {{ method_field('DELETE') }}
+                          </form>
+                          <a href="" onclick="
+                          if(confirm('Are you sure, You Want to delete this?'))
+                              {
+                                event.preventDefault();
+                                document.getElementById('delete-form-{{ $user->id }}').submit();
+                              }
+                              else{
+                                event.preventDefault();
+                              }" ><span class="glyphicon glyphicon-trash"></span></a>
+                        </td>
+                      </tr>
+                    </tr>
                   @endforeach
-                
-                </tbody>
+                  </tbody>
                 <tfoot>
                 <tr>
                   <th>S.No</th>
                   <th>User Name</th>
+                  <th>Assigned Roles</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
