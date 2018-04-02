@@ -87,7 +87,9 @@ class PostController extends Controller
         $post->body = $request->body;
         $post->status = $request->status;
         $post->save();
+        // Many to many relation between Posts and Tags
         $post->tags()->sync($request->tags);
+        // Many to many relation between Posts and Categories
         $post->categories()->sync($request->categories);
         return redirect(route('post.index'))->with('message', 'Added Post Successfully!!!!');
     }

@@ -45,6 +45,8 @@ class RoleController extends Controller
         $role = new role;
         $role->name = $request->name;
         $role->save();
+        // Many to many relation between Roles and Permissions
+        $role->permissions()->sync($request->permission);
         return redirect (route('role.index'))->with('message','Roles Created Successfully');
     }
 
@@ -76,6 +78,8 @@ class RoleController extends Controller
         $role = role::find($id);
         $role->name = $request->name;
         $role->save();
+        // Many to many relation between Roles and Permissions
+        $role->permissions()->sync($request->permission);
         return redirect (route('role.index'))->with('message','Roles Updated Successfully');
     }
 
@@ -88,6 +92,7 @@ class RoleController extends Controller
     public function destroy($id)
     {
         $roles = role::find($id);
+        $roles->permissions()->detach();
         $roles->delete();
         return redirect (route('role.index'))->with('message','Role Deleted Successfully');
     }

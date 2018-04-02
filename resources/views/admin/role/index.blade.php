@@ -14,12 +14,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        <i class="fa fa-ticket" aria-hidden="true"></i>role
+        <i class="fa fa-ticket" aria-hidden="true"></i>Role
       <small>Create, Read, Update, Delete</small>
       </h1>
       <ol class="breadcrumb">
         <li><a href="{{ route('admin.home') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li><a href="{{ route('role.index') }}">role Table</a></li>
+        <li><a href="{{ route('role.index') }}">Role Table</a></li>
         <li class="active">Data tables</li>
       </ol>
     </section>
@@ -30,7 +30,7 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-        <h3 class="box-title">role</h3>
+        <h3 class="box-title">Role</h3>
         <a class='pull-right btn btn-success' href="{{ route('role.create') }}">Add New</a>
       </div>
       @include('includes.messages')
@@ -40,7 +40,7 @@
                 <thead>
                   <tr>
                     <th>S.No</th>
-                    <th>role Name</th>
+                    <th>Role Name</th>
                     <th>Edit</th>
                     <th>Delete</th>
                   </tr>
@@ -74,7 +74,7 @@
                 <tfoot>
                 <tr>
                   <th>S.No</th>
-                  <th>role Name</th>
+                  <th>Role Name</th>
                   <th>Edit</th>
                   <th>Delete</th>
                 </tr>
