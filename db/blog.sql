@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 31, 2018 at 03:03 PM
+-- Generation Time: Apr 02, 2018 at 02:14 PM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -44,7 +44,7 @@ CREATE TABLE `admins` (
 --
 
 INSERT INTO `admins` (`id`, `name`, `email`, `password`, `phone`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin@gmail.com', '$2y$10$PTkhSjUC75yhBjhmV0R0jOdhxmrByO6NtabuwlwfnnkQWZlhmDFhq', '9999999999', 1, NULL, NULL);
+(1, 'Admin', 'admin@gmail.com', '$2y$10$xlUpytMzMh75H8180br/wOpcjJj3cxsGVkNZ8TaJhvUzGENzDBdn6', '', 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -53,11 +53,8 @@ INSERT INTO `admins` (`id`, `name`, `email`, `password`, `phone`, `status`, `cre
 --
 
 CREATE TABLE `admin_roles` (
-  `id` int(10) UNSIGNED NOT NULL,
-  `admin_id` int(11) NOT NULL,
-  `role_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `admin_id` int(10) UNSIGNED NOT NULL,
+  `role_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -79,8 +76,11 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
-(1, 'category1', 'category1', '2018-03-28 04:30:49', '2018-03-28 04:30:49'),
-(2, 'category2', 'category2', '2018-03-28 04:31:35', '2018-03-28 04:31:35');
+(1, 'Category1', 'Category1', '2018-04-02 10:05:56', '2018-04-02 10:05:56'),
+(2, 'Category2', 'Category2', '2018-04-02 10:06:08', '2018-04-02 10:06:08'),
+(3, 'Category3', 'Category3', '2018-04-02 10:06:23', '2018-04-02 10:06:23'),
+(4, 'Category4', 'Category4', '2018-04-02 10:06:34', '2018-04-02 10:06:34'),
+(5, 'Category5', 'Category5', '2018-04-02 10:06:47', '2018-04-02 10:06:47');
 
 -- --------------------------------------------------------
 
@@ -100,9 +100,14 @@ CREATE TABLE `category_posts` (
 --
 
 INSERT INTO `category_posts` (`post_id`, `category_id`, `created_at`, `updated_at`) VALUES
-(5, 1, '2018-03-29 05:37:32', '2018-03-29 05:37:32'),
-(6, 1, '2018-03-29 06:17:18', '2018-03-29 06:17:18'),
-(7, 2, '2018-03-29 06:18:27', '2018-03-29 06:18:27');
+(1, 1, '2018-04-02 10:11:47', '2018-04-02 10:11:47'),
+(2, 1, '2018-04-02 10:12:20', '2018-04-02 10:12:20'),
+(2, 2, '2018-04-02 10:12:20', '2018-04-02 10:12:20'),
+(3, 3, '2018-04-02 10:12:58', '2018-04-02 10:12:58'),
+(3, 4, '2018-04-02 10:12:58', '2018-04-02 10:12:58'),
+(4, 1, '2018-04-02 10:13:36', '2018-04-02 10:13:36'),
+(4, 2, '2018-04-02 10:13:36', '2018-04-02 10:13:36'),
+(4, 3, '2018-04-02 10:13:37', '2018-04-02 10:13:37');
 
 -- --------------------------------------------------------
 
@@ -121,16 +126,17 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(11, '2014_10_12_000000_create_users_table', 1),
-(12, '2014_10_12_100000_create_password_resets_table', 1),
-(13, '2018_03_11_193700_create_posts_table', 1),
-(14, '2018_03_11_193723_create_categories_table', 1),
-(15, '2018_03_11_193745_create_tags_table', 1),
-(16, '2018_03_11_193808_create_category_posts_table', 1),
-(17, '2018_03_11_193830_create_post_tags_table', 1),
-(18, '2018_03_11_194016_create_admins_table', 1),
-(19, '2018_03_11_194034_create_roles_table', 1),
-(20, '2018_03_11_194101_create_admin_roles_table', 1);
+(1, '2014_10_12_000000_create_users_table', 1),
+(2, '2014_10_12_100000_create_password_resets_table', 1),
+(3, '2018_03_11_193700_create_posts_table', 1),
+(4, '2018_03_11_193723_create_categories_table', 1),
+(5, '2018_03_11_193745_create_tags_table', 1),
+(6, '2018_03_11_193808_create_category_posts_table', 1),
+(7, '2018_03_11_193830_create_post_tags_table', 1),
+(8, '2018_03_11_194016_create_admins_table', 1),
+(9, '2018_04_02_083627_create_roles_table', 1),
+(10, '2018_04_02_083648_create_permissions_table', 1),
+(11, '2018_04_02_083705_create_admin_roles_table', 1);
 
 -- --------------------------------------------------------
 
@@ -143,6 +149,69 @@ CREATE TABLE `password_resets` (
   `token` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `for` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permissions`
+--
+
+INSERT INTO `permissions` (`id`, `name`, `for`, `created_at`, `updated_at`) VALUES
+(1, 'POST-CREATE', 'post', '2018-04-02 09:34:18', '2018-04-02 09:34:18'),
+(2, 'POST-UPDATE', 'post', '2018-04-02 09:34:29', '2018-04-02 09:34:29'),
+(3, 'POST-DELETE', 'post', '2018-04-02 09:34:38', '2018-04-02 09:34:38'),
+(4, 'POST-PUBLISH', 'post', '2018-04-02 09:34:58', '2018-04-02 09:34:58'),
+(5, 'USER-CREATE', 'user', '2018-04-02 09:35:11', '2018-04-02 09:35:11'),
+(6, 'USER-UPDATE', 'user', '2018-04-02 09:35:31', '2018-04-02 09:35:31'),
+(7, 'USER-DELETE', 'user', '2018-04-02 09:35:42', '2018-04-02 09:35:42'),
+(8, 'CATEGORY-CRUD', 'other', '2018-04-02 09:35:51', '2018-04-02 09:35:51'),
+(9, 'TAG-CRUD', 'other', '2018-04-02 09:36:01', '2018-04-02 09:36:01');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permission_role`
+--
+
+CREATE TABLE `permission_role` (
+  `role_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permission_role`
+--
+
+INSERT INTO `permission_role` (`role_id`, `permission_id`) VALUES
+(2, 1),
+(2, 2),
+(2, 3),
+(2, 4),
+(2, 8),
+(2, 9),
+(3, 1),
+(3, 2),
+(3, 3),
+(3, 4),
+(4, 1),
+(4, 2),
+(4, 3),
+(4, 4),
+(2, 5),
+(2, 6),
+(2, 7);
 
 -- --------------------------------------------------------
 
@@ -170,9 +239,10 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `title`, `subtitle`, `slug`, `body`, `status`, `posted_by`, `image`, `like`, `dislike`, `created_at`, `updated_at`) VALUES
-(5, 'post1', 'post1 subtitile', 'post1', 'asdfadfa', 1, NULL, 'ecommapi_1522309052.png', NULL, NULL, '2018-03-29 05:37:32', '2018-03-29 05:37:32'),
-(6, 'post2', 'post2 subtitle', 'post2', 'esfasdf', 1, NULL, 'Blog - Admin Panel_1522311438.png', NULL, NULL, '2018-03-29 06:17:18', '2018-03-29 06:17:18'),
-(7, 'post3', 'post3 subtitle', 'post3', 'sdvzasdfa', 1, NULL, 'ecommapi_1522311507.png', NULL, NULL, '2018-03-29 06:18:27', '2018-03-29 06:18:27');
+(1, 'Post1', 'Post1 Subtitle', 'Post1', 'Body', 1, NULL, 'Untitled_1522671107.png', NULL, NULL, '2018-04-02 10:11:47', '2018-04-02 10:11:47'),
+(2, 'post2', 'post2 Subtitle', 'post2', 'Body', 1, NULL, 'movies_1522671139.txt', NULL, NULL, '2018-04-02 10:12:19', '2018-04-02 10:12:19'),
+(3, 'post3', 'post3 subtitle', 'post3', 'Body', 1, NULL, 'image_1522671177.txt', NULL, NULL, '2018-04-02 10:12:57', '2018-04-02 10:12:57'),
+(4, 'Post4', 'Post4 subtitle', 'Post4', 'Body', 1, NULL, 'movies_1522671216.txt', NULL, NULL, '2018-04-02 10:13:36', '2018-04-02 10:13:36');
 
 -- --------------------------------------------------------
 
@@ -192,9 +262,14 @@ CREATE TABLE `post_tags` (
 --
 
 INSERT INTO `post_tags` (`post_id`, `tag_id`, `created_at`, `updated_at`) VALUES
-(5, 1, '2018-03-29 05:37:32', '2018-03-29 05:37:32'),
-(6, 1, '2018-03-29 06:17:18', '2018-03-29 06:17:18'),
-(7, 2, '2018-03-29 06:18:27', '2018-03-29 06:18:27');
+(1, 1, '2018-04-02 10:11:47', '2018-04-02 10:11:47'),
+(2, 1, '2018-04-02 10:12:19', '2018-04-02 10:12:19'),
+(2, 2, '2018-04-02 10:12:20', '2018-04-02 10:12:20'),
+(3, 3, '2018-04-02 10:12:57', '2018-04-02 10:12:57'),
+(3, 4, '2018-04-02 10:12:57', '2018-04-02 10:12:57'),
+(4, 1, '2018-04-02 10:13:36', '2018-04-02 10:13:36'),
+(4, 2, '2018-04-02 10:13:36', '2018-04-02 10:13:36'),
+(4, 3, '2018-04-02 10:13:36', '2018-04-02 10:13:36');
 
 -- --------------------------------------------------------
 
@@ -208,6 +283,15 @@ CREATE TABLE `roles` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `roles`
+--
+
+INSERT INTO `roles` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(2, 'Editor', '2018-04-02 09:40:21', '2018-04-02 09:40:21'),
+(3, 'Writer', '2018-04-02 09:40:33', '2018-04-02 09:40:33'),
+(4, 'Publisher', '2018-04-02 09:40:55', '2018-04-02 09:40:55');
 
 -- --------------------------------------------------------
 
@@ -228,8 +312,11 @@ CREATE TABLE `tags` (
 --
 
 INSERT INTO `tags` (`id`, `name`, `slug`, `created_at`, `updated_at`) VALUES
-(1, 'tag1', 'tag1', '2018-03-28 04:31:08', '2018-03-28 04:31:08'),
-(2, 'tag2', 'tag2', '2018-03-28 04:31:17', '2018-03-28 04:31:17');
+(1, 'Tag1', 'Tag1', '2018-04-02 10:04:29', '2018-04-02 10:04:29'),
+(2, 'Tag2', 'Tag2', '2018-04-02 10:04:42', '2018-04-02 10:04:42'),
+(3, 'Tag3', 'Tag3', '2018-04-02 10:04:56', '2018-04-02 10:04:56'),
+(4, 'Tag4', 'Tag4', '2018-04-02 10:05:14', '2018-04-02 10:05:14'),
+(5, 'Tag5', 'Tag5', '2018-04-02 10:05:26', '2018-04-02 10:05:26');
 
 -- --------------------------------------------------------
 
@@ -252,9 +339,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'user1', 'user1@gmail.com', '$2y$10$PTkhSjUC75yhBjhmV0R0jOdhxmrByO6NtabuwlwfnnkQWZlhmDFhq', 'UcJ0GCdmYwmTv4pSzZ8uKxkUPTAoADDTKMzWuKJJgTv5nHpojWMA7DxJbAwB', '2018-03-30 06:06:12', '2018-03-30 06:06:12'),
-(4, 'user2', 'user2@gmail.com', '$2y$10$XprcHTdPcHvaN3QfScFa9.nUMnnMvZ1DHQ602dP4NjMulL.Xa1T0W', 'asuS0XUV0xUEoK9Tjj1jZkm9jQEDR5tRIFX6Mglr0fVfzNIFHLIJlt800JfU', '2018-03-30 07:06:56', '2018-03-30 07:06:56'),
-(5, 'user3', 'user3@gmail.com', '$2y$10$E/l5HhVVfnkN2k4rIGB5f.u8.kWkUqSDH5jAiIiWL/b0syge2jGUC', 'jcOw5qalgLEJJWFuldAdklqmXWLdn0F4a9jshAvfrv4Ntn8bjOI82BgVoUpr', '2018-03-30 08:10:17', '2018-03-30 08:10:17');
+(1, 'User 1', 'user1@gmail.com', '$2y$10$xlUpytMzMh75H8180br/wOpcjJj3cxsGVkNZ8TaJhvUzGENzDBdn6', 'YKhmzd49N2Mr6dXwJvjT4T0HLVMARmBiAhj3eXM7FIQyEwo88XPgjcrTH3JW', '2018-04-02 09:32:56', '2018-04-02 09:32:56');
 
 --
 -- Indexes for dumped tables
@@ -271,7 +356,8 @@ ALTER TABLE `admins`
 -- Indexes for table `admin_roles`
 --
 ALTER TABLE `admin_roles`
-  ADD PRIMARY KEY (`id`);
+  ADD KEY `admin_roles_admin_id_index` (`admin_id`),
+  ADD KEY `admin_roles_role_id_index` (`role_id`);
 
 --
 -- Indexes for table `categories`
@@ -297,6 +383,12 @@ ALTER TABLE `migrations`
 --
 ALTER TABLE `password_resets`
   ADD KEY `password_resets_email_index` (`email`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `posts`
@@ -341,50 +433,56 @@ ALTER TABLE `admins`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `admin_roles`
---
-ALTER TABLE `admin_roles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `admin_roles`
+--
+ALTER TABLE `admin_roles`
+  ADD CONSTRAINT `admin_roles_admin_id_foreign` FOREIGN KEY (`admin_id`) REFERENCES `admins` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `category_posts`
