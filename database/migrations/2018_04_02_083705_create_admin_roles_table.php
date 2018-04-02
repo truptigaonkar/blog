@@ -13,10 +13,9 @@ class CreateAdminRolesTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_roles', function (Blueprint $table) {
-            $table->integer('admin_id')->unsigned()->index();
-            $table->integer('role_id')->unsigned()->index();
-            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
+        Schema::create('admin_role', function (Blueprint $table) {
+            $table->integer('admin_id');
+            $table->integer('role_id');
         });
     }
 
