@@ -49,9 +49,41 @@ Visit http://127.0.0.1:8000/ to see the application in action.
 
 Note: If you cannot see images (attachments) on webpage , then remove folder ‘storage’ from ‘app\public’ and then again link it using command as follows: ‘php artisan storage:link’
 
-### Blog – Admin Panel:
-![blog - admin panel](https://user-images.githubusercontent.com/14937374/37958457-e1a7f1b8-31b0-11e8-960b-43438b101d83.png)
+### Blog Home page with all the posts
+![blog home page with all the posts](https://user-images.githubusercontent.com/14937374/38236493-96c3871a-3724-11e8-8473-fcdd21e537b7.png)
 
-### Blog – User Panel:
-![blog - user panel](https://user-images.githubusercontent.com/14937374/37958462-e4c598dc-31b0-11e8-9b17-d1756ca3f65d.png)
+
+
+
+### Blog User Login
+![blog user login](https://user-images.githubusercontent.com/14937374/38236506-a6704108-3724-11e8-9f25-7f8e162e45f7.png)
+
+
+
+
+
+### User's home page after User Login
+![user s home page after user login](https://user-images.githubusercontent.com/14937374/38236516-b256b9de-3724-11e8-972f-89304ed522d0.png)
+
+
+
+
+
+
+### Blog Admin Login
+![blog admin login](https://user-images.githubusercontent.com/14937374/38236522-bc86f4b4-3724-11e8-82c4-20e6fc082c40.png)
+
+
+
+
+
+
+
+### Admin's home page after Admin Login
+![admin s home page after admin login](https://user-images.githubusercontent.com/14937374/38236536-c6057768-3724-11e8-86d8-bf876a8e4c5e.png)
+
+
+
+
+
 
